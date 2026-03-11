@@ -1,0 +1,25 @@
+# Python/Django
+.venv/
+env/
+venv/
+__pycache__/
+*.pyc
+*.pyd
+*.pyo
+*.sqlite3
+db.sqlite3
+local_settings.py
+media/
+static/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# VS Code
+.vscode/
+
+# Environment variables
+.env
+
