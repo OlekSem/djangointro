@@ -1,12 +1,13 @@
 from django import forms
 from .models import CustomUser
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm
 
 class CustomUserCreationForm(UserCreationForm):
-    username = forms.CharField(
-        label="Логін",
-        widget=forms.TextInput(attrs={'class': 'form-control'})
-    )
+    # username = forms.CharField(
+    #     label="Логін",
+    #     widget=forms.TextInput(attrs={'class': 'form-control'})
+    # )
 
     email = forms.EmailField(
         label="Електронна пошта",
@@ -46,12 +47,12 @@ class CustomUserCreationForm(UserCreationForm):
 
     class Meta:
         model = CustomUser
-        fields = ('username','email','first_name','last_name','image','password1','password2')
+        fields = ('email','first_name','last_name','image','password1','password2')
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if CustomUser.objects.filter(email=email).exists():
-            return forms.ValidationError("Дана пошта уже зареєстрована")
+            raise forms.ValidationError("Дана пошта уже зареєстрована")
         return email
     
 
@@ -71,3 +72,14 @@ class CustomUserCreationForm(UserCreationForm):
     #     if commit:
     #         user.save()
     #     return user
+
+
+class CustomUserLoginForm(AuthenticationForm):
+    username = forms.CharField(
+        label="Логін",
+        widget=forms.TextInput(attrs={'class': "form-control"})
+    )
+    password = forms.CharField(
+        label="Пароль",
+        widget=forms.PasswordInput(attrs={"class": "form-control"})
+    )

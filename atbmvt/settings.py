@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-sk&4(kx#q5iws)m)^6=9*_vu$e#p_9!ck3gumh2l^f%e!w87d^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 
 # Application definition
@@ -147,3 +147,14 @@ DJANGORESIZED_DEFAULT_KEEP_META = True
 DJANGORESIZED_DEFAULT_FORCE_FORMAT = 'WEBP'
 DJANGORESIZED_DEFAULT_FORMAT_EXTENSIONS = {'WEBP': ".webp"}
 DJANGORESIZED_DEFAULT_NORMALIZE_ROTATION = True
+
+# Emails
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_HOST_USER = 'quizzytests@gmail.com'
+EMAIL_HOST_PASSWORD = 'eplc imyv edac hxzn'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
