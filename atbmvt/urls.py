@@ -23,8 +23,8 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', include('users.urls', namespace='users')),
+    path('categories/', include('categories.urls')),
     path('', views.homepage, name='homepage'),
-    path('category/create', views.create_category, name='create_category'),
 ]
 
 urlpatterns+=static(settings.IMAGES_URL, document_root=settings.IMAGES_ROOT)

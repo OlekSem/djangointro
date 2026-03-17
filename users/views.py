@@ -2,7 +2,9 @@ from django.shortcuts import redirect, render
 from .forms import CustomUserCreationForm, CustomUserLoginForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from .utils import save_custom_image
 
+# Create your views here.
 # Create your views here.
 def register(request):
     if request.method == 'POST':
@@ -15,9 +17,9 @@ def register(request):
                     user.username = form.cleaned_data['email']
                 if 'image' in request.FILES:
                     image = request.FILES.get("image")
-                    user.image_small = image
-                    user.image_medium = image
-                    user.image_large = image
+                    user.image_small = save_custom_image(image, size=(300,300), folder="small")
+                    user.image_medium = save_custom_image(image, size=(800,800), folder="medium")
+                    user.image_large = save_custom_image(image, size=(1200,1200), folder="large")
                 user.save()
                 login(request, user)
                 return redirect('homepage')
