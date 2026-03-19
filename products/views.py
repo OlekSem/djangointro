@@ -43,7 +43,7 @@ def edit_product(request, product_id):
             try:
                 product = form.save()
 
-                # 🔥 handle images (same logic as add)
+                # 🔥 handle images (same logic as add) (я не списав, це моя емоція)
                 raw_ids = request.POST.getlist("images")
 
                 seen = set()
