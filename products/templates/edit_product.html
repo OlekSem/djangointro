@@ -1,0 +1,105 @@
+{% extends 'layout.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+  <h1 class="text-center">Редагувати продукт</h1>
+
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <form method="POST" enctype="multipart/form-data" id="product-form">
+        {% csrf_token %}
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="mb-3">{{ form.category.label_tag }}
+              {{ form.category|add_class:'form-select' }}</div>
+            <div class="mb-3">{{ form.name.label_tag }}
+              {{ form.name|add_class:'form-control' }}</div>
+            <div class="mb-3">{{ form.description.label_tag }}
+              {{ form.description|add_class:'form-control' }}</div>
+            <div class="mb-3">{{ form.price.label_tag }}
+              {{ form.price|add_class:'form-control' }}</div>
+          </div>
+
+          <div class="col-md-6">
+            <h5>Існуючі фото</h5>
+
+            <div class="d-flex flex-wrap mb-3">
+              {% for img in product.images.all %}
+                <div class="me-2 mb-2 position-relative image-block">
+                  <img src="{{ img.image.url }}" width="100" class="img-thumbnail" />
+
+                  <!-- hidden input (important) -->
+                  <input type="hidden" name="images" value="{{ img.id }}" />
+
+                  <!-- delete button -->
+                  <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0" onclick="removeImage(this)">×</button>
+                </div>
+              {% endfor %}
+            </div>
+
+            <h5>Додати нові фото</h5>
+            <input type="file" id="product-images" multiple class="form-control mb-3" />
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-warning mt-3">Оновити продукт</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      FilePond.registerPlugin(FilePondPluginImagePreview)
+    
+      const pond = FilePond.create(document.querySelector('#product-images'), {
+        allowMultiple: true,
+        allowReorder: true,
+        server: {
+          process: {
+            url: "{% url 'products:upload_temp_image' %}",
+            method: 'POST',
+            headers: {
+              'X-CSRFToken': '{{ csrf_token }}'
+            },
+            onload: (res) => JSON.parse(res).file_id
+          },
+          revert: (id, load, error) => {
+            fetch("{% url 'products:delete_temp_image' %}", {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+              },
+              body: JSON.stringify({ file_id: id })
+            })
+              .then((res) => res.json())
+              .then((res) => (res.status === 'ok' ? load() : error()))
+          }
+        }
+      })
+    
+      const form = document.querySelector('#product-form')
+    
+      form.addEventListener('submit', function () {
+        // remove previously added hidden inputs from FilePond
+        form.querySelectorAll('input[data-temp="true"]').forEach((el) => el.remove())
+    
+        pond.getFiles().forEach((file, index) => {
+          const input = document.createElement('input')
+          input.type = 'hidden'
+          input.name = 'images'
+          input.value = file.serverId
+          input.dataset.temp = 'true'
+          form.appendChild(input)
+        })
+      })
+    })
+    function removeImage(button) {
+      const container = button.closest('.image-block')
+    
+      // remove the whole block (including hidden input)
+      container.remove()
+    }
+  </script>
+{% endblock %}
